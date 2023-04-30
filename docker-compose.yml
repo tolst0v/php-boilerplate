@@ -1,0 +1,26 @@
+version: "3"
+services:
+  web:
+    hostname: php-boilerplate
+    container_name: php-boilerplate
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - .:/var/www/html/php-boilerplate
+      - ./.docker/apache2/sites-enabled/:/etc/apache2/sites-enabled/
+      - ./.docker/log/php-boilerplate/:/var/log/apache2/php-boilerplate/
+  xdebug:
+    build: './.docker/xdebug'
+    volumes:
+      - './app:/app'
+      - './.docker/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/test-xdebug.ini'
+    working_dir: '/app'
+    ports:
+      - 8000:8000
+    user: '1000'
+    environment:
+      XDEBUG_CONFIG: 'discover_client_host=true client_host=172.17.0.1 log_level=0'
+    command: 'php -S 0.0.0.0:8000 -t /app /app/index.php'
